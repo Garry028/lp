@@ -4,37 +4,41 @@
 
 // %load_ext nvcc4jupyter
 
-
-%%cuda
+% % cuda
 #include <iostream>
-using namespace std;
+    using namespace std;
 
-__global__
-void add(int* A, int* B, int* C, int size) {
+__global__ void add(int *A, int *B, int *C, int size)
+{
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (tid < size) {
+    if (tid < size)
+    {
         C[tid] = A[tid] + B[tid];
     }
 }
 
-
-void initialize(int* vector, int size) {
-    for (int i = 0; i < size; i++) {
+void initialize(int *vector, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
         vector[i] = rand() % 10;
     }
 }
 
-void print(int* vector, int size) {
-    for (int i = 0; i < size; i++) {
+void print(int *vector, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
         cout << vector[i] << " ";
     }
     cout << endl;
 }
 
-int main() {
+int main()
+{
     int N = 4;
-    int* A, * B, * C;
+    int *A, *B, *C;
 
     int vectorSize = N;
     size_t vectorBytes = vectorSize * sizeof(int);
@@ -51,17 +55,21 @@ int main() {
     cout << "Vector B: ";
     print(B, N);
 
-    int* X, * Y, * Z;
+    int *X, *Y, *Z; // cudaMalloc is used to store the variables on the gpu
     cudaMalloc(&X, vectorBytes);
     cudaMalloc(&Y, vectorBytes);
     cudaMalloc(&Z, vectorBytes);
 
+    // cudaMemcpy is used to cpoy data from dest to source
+    // host->cpu
+    // device->gpu
     cudaMemcpy(X, A, vectorBytes, cudaMemcpyHostToDevice);
     cudaMemcpy(Y, B, vectorBytes, cudaMemcpyHostToDevice);
 
     int threadsPerBlock = 256;
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
+    // function clock
     add<<<blocksPerGrid, threadsPerBlock>>>(X, Y, Z, N);
 
     cudaMemcpy(C, Z, vectorBytes, cudaMemcpyDeviceToHost);
@@ -69,7 +77,8 @@ int main() {
     cout << "Addition: ";
     print(C, N);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         printf("%d + %d = %d\n", A[i], B[i], C[i]);
     }
 

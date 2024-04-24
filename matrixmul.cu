@@ -5,7 +5,6 @@
 // %load_ext nvcc4jupyter
 
 % % cuda
-// WARNING: DO NOT COPY THIS CODE, INSTEAD DOWNLOAD IT TO AVOID ERRORS.
 #include <iostream>
     using namespace std;
 
@@ -88,7 +87,7 @@ int main()
     // Blocks per grid dimension (assumes THREADS divides N evenly)
     int BLOCKS = N / THREADS;
 
-    // Use dim3 structs for block  and grid dimensions
+    // Use dim3 structs for block and grid dimensions
     dim3 threads(THREADS, THREADS);
     dim3 blocks(BLOCKS, BLOCKS);
 
